@@ -1,25 +1,27 @@
 
-function NavBar() {
-    const navLinks = [
-        {label: "Dashboard", link: "/"},
-        {label: "My Notes", link: "/notes"},
-        {label: "Drawing Studio", link: "/drawings"},
-        {label: "Trash", link: "/trash"}
-    ];
+import { Link } from "react-router-dom";
 
-return (
+function Navbar() {
+  const navLinks = [
+    { label: "Home", link: "/" },
+    { label: "My Notes", link: "/notes" },
+    { label: "Trash", link: "/trash" },
+    { label: "Drawing Studio", link: "/drawings" }
+  ];
+
+  return (
     <nav>
-        <h2>Note App</h2>
+      <h2>NoteApp</h2>
 
-        <ul>
-            {navLinks.map((item) => (
-                <li key={item.label}>
-                    <a href={item.link}>{item.label}</a>
-                </li>
-            ))}
-        </ul>
+      <ul>
+        {navLinks.map((item) => (
+          <li key={item.label}>
+            <Link to={item.link}>{item.label}</Link>
+          </li>
+        ))}
+      </ul>
     </nav>
-);
+  );
 }
 
-export default NavBar;
+export default Navbar;
