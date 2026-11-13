@@ -1,27 +1,57 @@
 import Card from "../components/Card";
+import { useEffect, useReducer } from "react";
 
+function postsReducer(state, action) {
+    switch (action.type) {
+        case "FETCH_SUCCESS":
+        return {
+            ...state,
+            posts: action.payload,
+            isLoading: false,
+            isError: false
+        };
+        case "FETCH_ERROR":
+            return {
+                ...state,
+                isLoading: false,
+                isError: true
+            };
+            default:
+                return state;
+    }
+}
 
 function Home() {
-    const items = [
-        {
-            id: 1,
-            title: "My First Note!",
-            description: "Ideas and Thoughts!",
-            type: "Note"
-        },
-        {
-            id: 2,
-            title: "My First Drawing",
-            description: "Inspiration into a pen",
-            type: "Drawing"
-        },
-        {
-            id: 3,
-            title: "Project Ideas",
-            description: "Ideas for this week",
-            type: "Note"
+    
+    const [state, dispatch]= useReducer(postsReducer, {
+        posts: [],
+        isLoading: true,
+        isError: false
+    });
+
+    useEffect(() => {
+        async function fetchPosts() {
+            try {
+                const response = await fetch(
+                    "https://jsonplaceholder.typicode.com/posts?_limit=3"
+                );
+                if (!response.ok) {
+                    throw new Error("ERROR ERROR!!!");
+                }
+                const data = await response.json();
+
+                dispatch({
+                    type: "FETCH_SUCCESS",
+                    payload: data
+                });
+            } catch (error) {
+                dispatch({ type: "FETCH_ERROR" });
+            }
         }
-    ];
+        fetchPosts();
+    },[]);
+
+
 
     return (
         <main>
@@ -31,16 +61,23 @@ function Home() {
             <section>
                 <h2>Recent Work</h2>
 
+                {state.isLoading ? (
+                    <p>Loading your notes...</p> 
+                ) : state.isError ? (
+                    <p>Sorry 'o' something went wrong!</p>
+                ) : (
+
                 <div className="card-list">
-                    {items.map((item) => (
+                    {state.posts.map((post) => (
                         <Card
-                        key={item.id}
-                        title={item.title}
-                        description={item.description}
-                        type={item.type}
+                        key={post.id}
+                        title={post.title}
+                        description={post.body}
+                        type="API Note"
                         />
                     ))}
                 </div>
+                 )}
             </section>
         </main>
     );
