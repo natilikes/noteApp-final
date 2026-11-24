@@ -12,7 +12,6 @@ function Navbar() {
   return (
     <nav>
       <h2>NoteApp</h2>
-
       <ul>
         {navLinks.map((item) => (
           <li key={item.label}>

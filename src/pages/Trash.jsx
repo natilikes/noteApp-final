@@ -3,6 +3,11 @@ import { useState, useEffect } from "react";
 function Trash() {
     const [notes, setNotes] = useState([]);
 
+    const [drawings, setDrawings] = useState(() => {
+        const savedDrawings = localStorage.getItem("savedDrawings");
+        return savedDrawings ? JSON.parse(savedDrawings) : [];
+    });
+
     useEffect(() => {
         const savedNotes = localStorage.getItem("notes");
 
@@ -11,6 +16,9 @@ function Trash() {
         }
     }, []);
     const deletedNotes = notes.filter((note) => note.isDeleted);
+    const deletedDrawings= drawings.filter(
+        (drawing) => drawing.isDeleted
+    );
 
     function handleRestoreNote(id) {
         const updatedNotes = notes.map((note) =>
@@ -18,9 +26,20 @@ function Trash() {
     ? {...note, isDeleted: false}
     : note
     );
-    setNotes(updatedNotes);
+    setNotes(updatedNotes)
     localStorage.setItem("notes", JSON.stringify(updatedNotes));
-    }
+}
+function handleRestoreDrawing(id) {
+    const updatedDrawings = drawings.map((drawing) => 
+    drawing.id === id
+  ? {...drawing, isDeleted: false }
+  : drawing
+);
+setDrawings(updatedDrawings);
+localStorage.setItem("savedDrawings", JSON.stringify(updatedDrawings));
+}
+
+
     return (
         <main>
             <h1>Trash!</h1>
@@ -40,6 +59,21 @@ function Trash() {
                 </div>
             ))
         )}
+            {deletedDrawings.map((drawing) => (
+                <div key={drawing.id} className="card">
+                    <h3>My Drawings</h3>
+
+                <img
+                src={drawing.image}
+                alt="Deleted drawing"    
+                width="200"
+                />
+
+                <button onClick={() => handleRestoreDrawing(drawing.id)}>
+                    Restore
+                </button>
+                </div>
+            ))}
             </section>       
         </main>
     );

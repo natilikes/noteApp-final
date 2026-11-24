@@ -9,6 +9,12 @@ function Notes() {
     const [description, setDescription] = useState("");
     const [editingId, setEditingId] = useState(null);
 
+    const [drawings, setDrawings] = useState(() => {
+        const savedDrawings = localStorage.getItem("savedDrawings");
+
+        return savedDrawings ? JSON.parse(savedDrawings) : [];
+    });
+
     useEffect(() => {
         localStorage.setItem("notes", JSON.stringify(notes));
     }, [notes]);
@@ -51,6 +57,21 @@ function Notes() {
     );
     setNotes(updatedNotes);
     }
+
+    function handleDeleteDrawing(id) {
+    const updatedDrawings = drawings.map((drawing) => 
+    drawing.id === id
+    ? {...drawing, isDeleted: true }
+    : drawing 
+   );
+   setDrawings(updatedDrawings);
+
+   localStorage.setItem(
+    "savedDrawings",
+    JSON.stringify(updatedDrawings)
+    );
+    }
+
     //to EDIT my notes
     function handleEditNote(note) {
             setEditingId(note.id);
@@ -81,6 +102,16 @@ function Notes() {
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             />
+            <button type="submit">
+                {editingId != null ? "Save Changes" : "Add Note"}
+                </button>
+
+            {editingId != null && (
+             <button type="button" onClick={handleCancelEdit}>
+             Cancel!!
+             </button>
+             )}    
+
             </form>    
 
             <section>
@@ -97,13 +128,20 @@ function Notes() {
                         <button onClick={() => handleEditNote(note)}>
                             Edit!
                         </button>
-
-                        {editingId != null && (
-                            <button type="button" onClick={handleCancelEdit}>
-                                Cancel!!
-                            </button>
-                        )}
                     </div>
+                ))}
+                {drawings.filter((drawing) => !drawing.isDeleted).map((drawing) => (
+                            <div key={drawing.id} className="card">
+                                <h3>My Drawings</h3>
+                                <img
+                                src={drawing.image}
+                                alt="Saved Drawings"
+                                width="200"
+                                />
+                                <button onClick={() => handleDeleteDrawing(drawing.id)}>
+                                    Delete!!
+                                </button>
+                                </div>
                 ))}
             </section>
         </main>
